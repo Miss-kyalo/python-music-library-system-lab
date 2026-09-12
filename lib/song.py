@@ -1,55 +1,74 @@
-
-
 class Song:
-    
+    all = []
     count = 0
     genres = []
     artists = []
     genre_count = {}
-    artists_count = {}
+    artist_count = {}
 
-    def __init__(self, name, artist, genre):
-        """Initialize instance attributes and invoke tracking class methods."""
+    def __init__(self, name, artist, genre=""):
         self.name = name
         self.artist = artist
         self.genre = genre
 
-       
-        Song.add_song_to_count()
-        Song.add_to_genres(self.genre)
-        Song.add_to_artists(self.artist)
-        Song.add_to_genre_count(self.genre)
-        Song.add_to_artists_count(self.artist)
+        # Register instance to class tracking
+        Song.all.append(self)
+        Song.count = len(Song.all)
 
-    @classmethod
-    def add_song_to_count(cls):
-        """Increment the total count of songs created."""
-        cls.count += 1
+        # Track unique genres and update counts
+        if genre:
+            if genre not in Song.genres:
+                Song.genres.append(genre)
+            Song.genre_count[genre] = Song.genre_count.get(genre, 0) + 1
 
-    @classmethod
-    def add_to_genres(cls, genre):
-        """Add unique genre to the genres list."""
-        if genre not in cls.genres:
-            cls.genres.append(genre)
+        # Track unique artists and update counts
+        if artist:
+            if artist not in Song.artists:
+                Song.artists.append(artist)
+            Song.artist_count[artist] = Song.artist_count.get(artist, 0) + 1
 
-    @classmethod
-    def add_to_artists(cls, artist):
-        """Add unique artist to the artists list."""
-        if artist not in cls.artists:
-            cls.artists.append(artist)
+    @property
+    def name(self):
+        return self._name
 
-    @classmethod
-    def add_to_genre_count(cls, genre):
-        """Increment the genre count dictionary or initialize a new entry."""
-        if genre in cls.genre_count:
-            cls.genre_count[genre] += 1
+    @name.setter
+    def name(self, value):
+        if isinstance(value, str) and len(value) > 0:
+            self._name = value
         else:
-            cls.genre_count[genre] = 1
+            raise ValueError("Name must be a non-empty string.")
+
+    @property
+    def artist(self):
+        return self._artist
+
+    @artist.setter
+    def artist(self, value):
+        if isinstance(value, str) and len(value) > 0:
+            self._artist = value
+        else:
+            raise ValueError("Artist must be a non-empty string.")
+
+    @property
+    def genre(self):
+        return self._genre
+
+    @genre.setter
+    def genre(self, value):
+        if isinstance(value, str):
+            self._genre = value
+        else:
+            raise ValueError("Genre must be a string.")
 
     @classmethod
-    def add_to_artists_count(cls, artist):
-        """Increment the artist count dictionary or initialize a new entry."""
-        if artist in cls.artists_count:
-            cls.artists_count[artist] += 1
-        else:
-            cls.artists_count[artist] = 1
+    def clear(cls):
+        cls.all.clear()
+        cls.count = 0
+        cls.genres.clear()
+        cls.artists.clear()
+        cls.genre_count.clear()
+        cls.artist_count.clear()
+
+    @classmethod
+    def create(cls, name, artist, genre=""):
+        return cls(name, artist, genre)
